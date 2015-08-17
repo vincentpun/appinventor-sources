@@ -34,10 +34,8 @@ import android.content.Context;
 import android.app.Activity;
 
 /**
- * BLE provides scanning BLE device and connection
- *
- * By Tony Chan & Bain ZHANG @ PolyU (kwong3513@yahoo.com.hk &
- * 12131354d@connect.polyu.hk)
+ * BLE component
+ * By Tony Chan & Beibei ZHANG ( kwong3513@yahoo.com.hk & beibei.zhang@connect.polyu.hk )
  */
 
 @DesignerComponent(version = YaVersion.BLE_COMPONENT_VERSION, description = "This is a trial version of BLE component, blocks need to be specified later", category = ComponentCategory.CONNECTIVITY, nonVisible = true, iconName = "images/ble.png")
@@ -116,16 +114,18 @@ public class BLE extends AndroidNonvisibleComponent
 	/**
 	 * Later
 	 * 
-	 * @param container,
-	 *            component will be placed in
+	 * @param container, component will be placed in
 	 */
+    
 	public BLE(ComponentContainer container) {
 		super(container.$form());
 		activity = (Activity) container.$context();
-		
-		//testing
-		//mGattCharList = new ArrayList<BluetoothGattCharacteristic>();
-		//mGattDes = new ArrayList<BluetoothGattDescriptor>();
+        
+        /*@testing
+		mGattCharList = new ArrayList<BluetoothGattCharacteristic>();
+		mGattDes = new ArrayList<BluetoothGattDescriptor>();
+        */
+        
 		mLeDeviceAd = new HashMap<BluetoothDevice, byte[]>();
 		mLeDevices = new ArrayList<BluetoothDevice>();
 		mGattService = new ArrayList<BluetoothGattService>();
@@ -173,29 +173,31 @@ public class BLE extends AndroidNonvisibleComponent
 	}
 
 	@SimpleFunction
-	public void ScanDeviceStart() {
+	public void StartScanning() {
 		mBluetoothAdapter.startLeScan(mLeScanCallback);
 	}
 
 	@SimpleFunction
-	public void ScanDeviceStop() {
+	public void StopScanning() {
 		mBluetoothAdapter.stopLeScan(mLeScanCallback);
 	}
-	
+            
+	/*
 	@SimpleFunction
 	public void SelectConnectedDevice(String address) {
 		currentBluetoothGatt = gattList.get(address);
 	}
+    */
 
 	@SimpleFunction
-	public void ConnectToDevice(int index) {
+	public void Connect(int index) {
 		BluetoothGattCallback newGattCallback=null;
 		currentBluetoothGatt = mLeDevices.get(index - 1).connectGatt(activity, false, initCallBack(newGattCallback));
 		gattList.put(mLeDevices.get(index - 1).toString(), currentBluetoothGatt);
 	}
 	
 	@SimpleFunction
-    public void ConnectToDeviceByAddress(String address) {
+    public void ConnectWithAddress(String address) {
     	for(BluetoothDevice bluetoothDevice: mLeDevices){
     		if(bluetoothDevice.toString().equals(address)){
     			BluetoothGattCallback newGattCallback=null;
@@ -207,7 +209,7 @@ public class BLE extends AndroidNonvisibleComponent
     }
 	
 	@SimpleFunction
-	public void DisconnectToDevice(String address) {
+	public void DisconnectWithAddress(String address) {
 		if (gattList.containsKey(address)){
 			gattList.get(address).disconnect();
 			isConnected=false;
@@ -226,14 +228,14 @@ public class BLE extends AndroidNonvisibleComponent
 	}
 
 	@SimpleFunction
-	public void WriteFindMeValue(int setFindMe) {
+	public void WriteFindMe(int setFindMe) {
 		if (setFindMe <= 2 && setFindMe >= 0) {
 			writeChar(BLEList.FINDME_CHAR, BLEList.FINDME_SER, setFindMe, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		}
 	}
 	
 	@SimpleFunction
-    public void SetLinkLossValue(int value) {
+    public void SetLinkLoss(int value) {
     	if (value <= 2 && value >= 0){
     		linkLoss_value=value;
     		writeChar(BLEList.LINKLOSS_CHAR, BLEList.LINKLOSS_SER, value, BluetoothGattCharacteristic.FORMAT_UINT8,0);
@@ -241,17 +243,17 @@ public class BLE extends AndroidNonvisibleComponent
     }
 	
 	@SimpleFunction
-	public void ReadBatteryValue() {
+	public void ReadBattery() {
 		readChar(BLEList.BATTERY_LEVEL_CHAR, BLEList.BATTERY_LEVEL_SER);
 	}
 
 	@SimpleFunction
-	public void ReadTemperatureValue() {
+	public void ReadTemperature() {
 		readChar(BLEList.THERMOMETER_CHAR, BLEList.THERMOMETER_SER);
 	}
 
 	@SimpleFunction
-	public void ReadHeartRateValue() {
+	public void ReadHeartRate() {
 		readChar(BLEList.HEART_RATE_MEASURE_CHAR, BLEList.HEART_RATE_SER);
 	}
 	
@@ -261,7 +263,7 @@ public class BLE extends AndroidNonvisibleComponent
     }
     
     @SimpleFunction
-    public void ReadLinkLossValue() {
+    public void ReadLinkLoss() {
         readChar(BLEList.LINKLOSS_CHAR, BLEList.LINKLOSS_SER);
     }
     
@@ -345,14 +347,16 @@ public class BLE extends AndroidNonvisibleComponent
     		return "High Alert";
     }
     
-    /*@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+    /*
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR)
 	public String DescriptorValue() {
 		String value="";
 		for(byte i:data){
 			value+=i;
 		}
 		return value;
-	}*/
+	}
+    */
 	
 	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
 	public boolean IsDeviceConnected() {
@@ -363,8 +367,7 @@ public class BLE extends AndroidNonvisibleComponent
 		}
 	}
 	
-	/*
-//--------------------------------testing-------------------------------------------------------------------------------------
+    /*
 	@SimpleFunction
 	public void ReadCharValue(int index){
 		currentBluetoothGatt.readCharacteristic(mGattCharList.get(index-1));
@@ -415,10 +418,6 @@ public class BLE extends AndroidNonvisibleComponent
 	}
 	*/
 	
-//----------------------------------------------------------------------------------------------------------------------------
-	
-	
-	
 	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
 	public String DeviceList() {
 		deviceInfoList = "";
@@ -443,8 +442,6 @@ public class BLE extends AndroidNonvisibleComponent
 	
 	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
 	public int IntGattValue() {
-		//ByteBuffer wrapped = ByteBuffer.wrap(data);
-		//int intValue = wrapped.getInt();
 		return intValue;
 	}
 	
@@ -463,7 +460,7 @@ public class BLE extends AndroidNonvisibleComponent
 	}
 
 	@SimpleEvent(description = "")
-	public void GetConnected() {
+	public void Connected() {
 		EventDispatcher.dispatchEvent(this, "Connected");
 	}
 	
@@ -666,7 +663,7 @@ public class BLE extends AndroidNonvisibleComponent
 				isConnected = true;
 				gatt.discoverServices();
 				gatt.readRemoteRssi();
-				GetConnected();
+				Connected();
 			}
 			if(newState == BluetoothProfile.STATE_DISCONNECTED){
 				isConnected = false;

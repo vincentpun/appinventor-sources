@@ -5573,53 +5573,73 @@ public interface OdeMessages extends Messages {
     @Description("")
     String bleComponentPallette();
     
-    @DefaultMessage("ScanDeviceStart")
+    @DefaultMessage("StartScanning")
     @Description("")
-    String ScanDeviceStartMethods();
+    String StartScanningMethods();
     
-    @DefaultMessage("ScanDeviceStop")
+    @DefaultMessage("StopScanning")
     @Description("")
-    String ScanDeviceStopMethods();
+    String StopScanningMethods();
     
-    @DefaultMessage("ConnectToDevice")
+    @DefaultMessage("Connected")
     @Description("")
-    String ConnectToDeviceMethods();
+    String ConnectedMethods();
     
-    @DefaultMessage("ConnectToDeviceByAddress")
+    @DefaultMessage("ConnectWithAddress")
     @Description("")
-    String ConnectToDeviceByAddressMethods();
+    String ConnectWithAddressMethods();
     
-    @DefaultMessage("DisconnectToDevice")
+    @DefaultMessage("DisconnectWithAddress")
     @Description("")
-    String DisconnectToDeviceMethods();
+    String DisconnectWithAddressMethods();
     
     @DefaultMessage("WriteValue")
     @Description("")
     String WriteValueMethods();
     
-    @DefaultMessage("SelectFoundDevice")
+    @DefaultMessage("ReadValue")
     @Description("")
-    String SelectFoundDeviceMethods();
+    String ReadValueMethods();
     
-    @DefaultMessage("WriteFindMeValue")
+    @DefaultMessage("WriteFindMe")
     @Description("")
-    String WriteFindMeValueMethods();
+    String WriteFindMeMethods();
     
-    @DefaultMessage("SetLinkLossValue")
+    @DefaultMessage("SetLinkLoss")
     @Description("")
-    String SetLinkLossValueMethods();
+    String SetLinkLossMethods();
     
-    @DefaultMessage("ReadBatteryValue")
+    @DefaultMessage("ReadBattery")
     @Description("")
-    String ReadBatteryValueMethods();
+    String ReadBatteryMethods();
     
-    @DefaultMessage("ReadTemperatureValue")
+    @DefaultMessage("ReadTemperature")
     @Description("")
-    String ReadTemperatureValueMethods();
+    String ReadTemperatureMethods();
     
-    @DefaultMessage("ReadHeartRateValue")
+    @DefaultMessage("ReadHeartRate")
     @Description("")
-    String ReadHeartRateValueMethods();
+    String ReadHeartRateMethods();
+    
+    @DefaultMessage("ReadTxPower")
+    @Description("")
+    String ReadTxPowerMethods();
+    
+    @DefaultMessage("ReadLinkLoss")
+    @Description("")
+    String ReadLinkLossMethods();
+    
+    @DefaultMessage("FoundDeviceRssi")
+    @Description("")
+    String FoundDeviceRssiMethods();
+    
+    @DefaultMessage("FoundDeviceName")
+    @Description("")
+    String FoundDeviceNameMethods();
+    
+    @DefaultMessage("FoundDeviceUUID")
+    @Description("")
+    String FoundDeviceUUIDMethods();
     
     @DefaultMessage("BatteryValue")
     @Description("")
@@ -5628,14 +5648,6 @@ public interface OdeMessages extends Messages {
     @DefaultMessage("TemperatureValue")
     @Description("")
     String TemperatureValueProperties();
-    
-    @DefaultMessage("ReadTxPower")
-    @Description("")
-    String ReadTxPowerMethods();
-    
-    @DefaultMessage("ReadLinkLossValue")
-    @Description("")
-    String ReadLinkLossValueMethods();
     
     @DefaultMessage("HeartRateValue")
     @Description("")
@@ -5657,45 +5669,9 @@ public interface OdeMessages extends Messages {
     @Description("")
     String DeviceListProperties();
     
-    @DefaultMessage("SelectConnectedDevice")
-    @Description("")
-    String SelectConnectedDeviceMethods();
-    
-    @DefaultMessage("FoundDeviceUUID")
-    @Description("")
-    String FoundDeviceUUIDMethods();
-    
-    @DefaultMessage("FoundDeviceRssi")
-    @Description("")
-    String FoundDeviceRssiMethods();
-    
-    @DefaultMessage("FoundDeviceName")
-    @Description("")
-    String FoundDeviceNameMethods();
-    
     @DefaultMessage("ConnectedDeviceRssi")
     @Description("")
     String ConnectedDeviceRssiProperties();
-    
-    @DefaultMessage("GetConnected")
-    @Description("")
-    String GetConnectedEvents();
-    
-    @DefaultMessage("ValueChanged")
-    @Description("")
-    String ValueChangedEvents();
-    
-    @DefaultMessage("RssiChanged")
-    @Description("")
-    String RssiChangedEvents();
-    
-    @DefaultMessage("DeviceFound")
-    @Description("")
-    String DeviceFoundEvents();
-    
-    @DefaultMessage("ValueRead")
-    @Description("")
-    String ValueReadEvents();
     
     @DefaultMessage("IntGattValue")
     @Description("")
@@ -5709,8 +5685,24 @@ public interface OdeMessages extends Messages {
     @Description("")
     String ByteGattValueProperties();
     
-    @DefaultMessage("ReadValue")
+    @DefaultMessage("Connected")
     @Description("")
-    String ReadValueMethods();
+    String ConnectedEvents();
+    
+    @DefaultMessage("RssiChanged")
+    @Description("")
+    String RssiChangedEvents();
+    
+    @DefaultMessage("DeviceFound")
+    @Description("")
+    String DeviceFoundEvents();
+    
+    @DefaultMessage("ValueRead")
+    @Description("")
+    String ValueReadEvents();
+    
+    @DefaultMessage("ValueChanged")
+    @Description("")
+    String ValueChangedEvents();
     
 }
