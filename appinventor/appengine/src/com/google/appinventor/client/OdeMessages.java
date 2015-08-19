@@ -5593,13 +5593,29 @@ public interface OdeMessages extends Messages {
     @Description("")
     String DisconnectWithAddressMethods();
     
-    @DefaultMessage("WriteValue")
+    @DefaultMessage("WriteIntValue")
     @Description("")
-    String WriteValueMethods();
+    String WriteIntValueMethods();
     
-    @DefaultMessage("ReadValue")
+    @DefaultMessage("WriteStringValue")
     @Description("")
-    String ReadValueMethods();
+    String WriteStringValueMethods();
+    
+    @DefaultMessage("ReadIntValue")
+    @Description("")
+    String ReadIntValueMethods();
+    
+    @DefaultMessage("ReadStringValue")
+    @Description("")
+    String ReadStringValueMethods();
+    
+    @DefaultMessage("ReadFloatValue")
+    @Description("")
+    String ReadFloatValueMethods();
+    
+    @DefaultMessage("ReadByteValue")
+    @Description("")
+    String ReadByteValueMethods();
     
     @DefaultMessage("WriteFindMe")
     @Description("")
@@ -5700,6 +5716,10 @@ public interface OdeMessages extends Messages {
     @DefaultMessage("ValueRead")
     @Description("")
     String ValueReadEvents();
+    
+    @DefaultMessage("ValueWrite")
+    @Description("")
+    String ValueWriteEvents();
     
     @DefaultMessage("ValueChanged")
     @Description("")
