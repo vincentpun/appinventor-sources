@@ -34,8 +34,7 @@ import android.content.Context;
 import android.app.Activity;
 
 /**
- * BLE component By Tony Chan & Beibei ZHANG ( kwong3513@yahoo.com.hk &
- * beibei.zhang@connect.polyu.hk )
+ * @author Tony Chan & Beibei ZHANG ( kwong3513@yahoo.com.hk & beibei.zhang@connect.polyu.hk )
  */
 
 @DesignerComponent(version = YaVersion.BLE_COMPONENT_VERSION, description = "This is a trial version of BLE component, blocks need to be specified later", category = ComponentCategory.CONNECTIVITY, nonVisible = true, iconName = "images/ble.png")
@@ -210,8 +209,8 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 	}
 	
 	@SimpleFunction
-	public void WriteIntValue(String service_uuid, String characteristic_uuid, int value, int format, int offset) {
-		writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), value, format, offset);
+	public void WriteIntValue(String service_uuid, String characteristic_uuid, int value, int offset) {
+		writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), value, BluetoothGattCharacteristic.FORMAT_SINT32, offset);
 	}
 
 	@SimpleFunction
@@ -288,17 +287,21 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 	@SimpleFunction
 	public String FoundDeviceName(int index) {
 		if (index <= mLeDevices.size()) {
+			LogMessage("Device Name is found", "i");
 			return mLeDevices.get(index).getName();
 		} else {
-			return "";
+			LogMessage("Device Name isn't found", "e");
+			return null;
 		}
 	}
 
 	@SimpleFunction
 	public String FoundDeviceUUID(int index) {
 		if (index <= mLeDevices.size()) {
+			LogMessage("Device UUID is found", "i");
 			return mLeDevices.get(index).getAddress();
 		} else {
+			LogMessage("Device UUID is found", "e");
 			return "";
 		}
 	}
@@ -321,8 +324,10 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 				tempUnit = "Fahrenheit";
 			}
 			float mTemp = ((bodyTemp[2] & 0xff) << 8) + (bodyTemp[1] & 0xff);
+			LogMessage("Temperature value is returned", "i");
 			return mTemp + tempUnit;
 		} else {
+			LogMessage("Cannot read temperature value", "e");
 			return "Cannot Read Temperature";
 		}
 	}
@@ -336,8 +341,10 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 			} else {
 				mTemp = (heartRate[2] & 0xff);
 			}
+			LogMessage("Heart rate value is returned", "i");
 			return mTemp + "times/sec";
 		} else {
+			LogMessage("Cannot read heart rate value", "e");
 			return "Cannot Read Heart Rate";
 		}
 	}
@@ -358,12 +365,6 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	/*
-	 * @SimpleProperty(category = PropertyCategory.BEHAVIOR) public String
-	 * DescriptorValue() { String value=""; for(byte i:data){ value+=i; } return
-	 * value; }
-	 */
-
 	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
 	public boolean IsDeviceConnected() {
 		if (isConnected) {
@@ -373,42 +374,19 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	/*
-	 * @SimpleFunction public void ReadCharValue(int index){
-	 * currentBluetoothGatt.readCharacteristic(mGattCharList.get(index-1)); }
-	 * 
-	 * @SimpleFunction public void GetChar(int index){ mGattCharList =
-	 * mGattService.get(index-1).getCharacteristics(); String list=""; if
-	 * (!mGattCharList.isEmpty()) { for (int i = 0; i < mGattCharList.size();
-	 * i++) { if (i != (mGattCharList.size() - 1)) list +=
-	 * mGattCharList.get(i).getUuid() + ","; else list +=
-	 * mGattCharList.get(i).getUuid() ; } } return list; }
-	 * 
-	 * @SimpleFunction public void GetDes(int index){ mGattDes =
-	 * mGattCharList.get(index-1).getDescriptors(); String list=""; if
-	 * (!mGattDes.isEmpty()) { for (int i = 0; i < mGattDes.size(); i++) { if (i
-	 * != (mGattDes.size() - 1)) list += mGattDes.get(i).getUuid() + ","; else
-	 * list += mGattDes.get(i).getUuid() ; } } return list; }
-	 * 
-	 * @SimpleProperty(category = PropertyCategory.BEHAVIOR) public String
-	 * SerList() { String list=""; if (!mGattService.isEmpty()) { for (int i =
-	 * 0; i < mGattService.size(); i++) { if (i != (mGattService.size() - 1))
-	 * list += mGattService.get(i).getUuid() + ","; else list +=
-	 * mGattService.get(i).getUuid() ; } } return list; }
-	 */
-
 	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
 	public String DeviceList() {
 		deviceInfoList = "";
 		mLeDevices = sortDeviceList(mLeDevices);
 		if (!mLeDevices.isEmpty()) {
 			for (int i = 0; i < mLeDevices.size(); i++) {
-				if (i != (mLeDevices.size() - 1))
+				if (i != (mLeDevices.size() - 1)) {
 					deviceInfoList += mLeDevices.get(i).toString() + " " + mLeDevices.get(i).getName() + " "
 							+ Integer.toString(mLeDeviceRssi.get(mLeDevices.get(i))) + ",";
-				else
+				} else {
 					deviceInfoList += mLeDevices.get(i).toString() + " " + mLeDevices.get(i).getName() + " "
 							+ Integer.toString(mLeDeviceRssi.get(mLeDevices.get(i)));
+				}
 			}
 		}
 		return deviceInfoList;
@@ -598,41 +576,6 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	/*
-	 * public void printScanRecord (byte[] scanRecord) { try { String
-	 * decodedRecord = new String(scanRecord,"UTF-8"); Log.d("DEBUG",
-	 * "decoded String : " + ByteArrayToString(scanRecord)); } catch
-	 * (UnsupportedEncodingException e) { e.printStackTrace(); }
-	 * ByteArrayToString(scanRecord); List<AdRecord> records =
-	 * AdRecord.parseScanRecord(scanRecord); }
-	 * 
-	 * public static String ByteArrayToString(byte[] ba) { StringBuilder hex =
-	 * new StringBuilder(ba.length * 2); for (byte b : ba) hex.append(b + " ");
-	 * 
-	 * return hex.toString(); }
-	 * 
-	 * public static class AdRecord {
-	 * 
-	 * public AdRecord(int length, int type, byte[] data) { String decodedRecord
-	 * = ""; try { decodedRecord = new String(data,"UTF-8");
-	 * 
-	 * } catch (UnsupportedEncodingException e) { e.printStackTrace(); }
-	 * 
-	 * Log.d("DEBUG", "Length: " + length + " Type : " + type + " Data : " +
-	 * ByteArrayToString(data)); }
-	 * 
-	 * public static List<AdRecord> parseScanRecord(byte[] scanRecord) {
-	 * List<AdRecord> records = new ArrayList<AdRecord>(); int index = 0; while
-	 * (index < scanRecord.length) { int length = scanRecord[index++]; //Done
-	 * once we run out of records if (length == 0) break; int type =
-	 * scanRecord[index]; //Done if our record isn't a valid type if (type == 0)
-	 * break; byte[] data = Arrays.copyOfRange(scanRecord, index+1,
-	 * index+length); records.add(new AdRecord(length, type, data)); //Advance
-	 * index += length; } return records; } }
-	 */
-
-	// -----------------------------------callback-------------------------------------------------
-	// scan callback
 	private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
 		@Override
 		public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
@@ -654,12 +597,14 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 	BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
 		@Override
 		public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+			
 			if (newState == BluetoothProfile.STATE_CONNECTED) {
 				isConnected = true;
 				gatt.discoverServices();
 				gatt.readRemoteRssi();
 				Connected();
 			}
+			
 			if (newState == BluetoothProfile.STATE_DISCONNECTED) {
 				isConnected = false;
 			}
@@ -684,20 +629,17 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 					battery = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 					isCharRead = true;
 					ValueRead("", battery, 0,"");
-					// ValueRead(battery);
 				} else if (characteristic.getUuid().equals(BLEList.TXPOWER_CHAR)) {
 					txPower = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 					isCharRead = true;
 					ValueRead("", txPower, 0, "");
-					// ValueRead(txPower);
 				} else if (characteristic.getUuid().equals(BLEList.LINKLOSS_CHAR)) {
 					linkLoss_value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 					isCharRead = true;
 					ValueRead("", linkLoss_value, 0, "");
-					// ValueRead(linkLoss_value);
 				} else {
 					data = characteristic.getValue();
-					intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, intOffset);
+					intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32, intOffset);
 					stringValue = characteristic.getStringValue(strOffset);
 					floatValue = characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_FLOAT, floatOffset);
 					byteValue = "";
@@ -751,7 +693,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 				// ValueChanged(linkLoss_value);
 			} else {
 				data = characteristic.getValue();
-				intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, intOffset);
+				intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32, intOffset);
 				stringValue = characteristic.getStringValue(strOffset);
 				floatValue = characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_FLOAT, floatOffset);
 				byteValue = "";
@@ -781,7 +723,6 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 
 		@Override
-		// get the RSSI
 		public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
 			device_rssi = rssi;
 			RssiChanged();
