@@ -90,13 +90,13 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 	private int txPower = -1;
 	private byte[] data;
 	private byte[] descriptorValue;
-	private int intValue;
-	private float floatValue;
+	private int intValue = 0;
+	private float floatValue = 0;
 	private String stringValue;
 	private String byteValue;
-	private int intOffset;
-	private int strOffset;
-	private int floatOffset;
+	private int intOffset = 0;
+	private int strOffset = 0;
+	private int floatOffset = 0;
 
 	public BLE(ComponentContainer container) {
 		super(container.$form());
@@ -146,7 +146,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		return bluetoothManager.getAdapter();
 	}
 
-	@SimpleFunction
+	@SimpleFunction(description="Start Scanning BLE device.")
 	public void StartScanning() {
 		if (!mLeDevices.isEmpty()) {
 			mLeDevices.clear();
@@ -156,13 +156,13 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		LogMessage("StarScanning Successfully.", "i");
 	}
 
-	@SimpleFunction
+	@SimpleFunction(description="Stop Scanning BLE device.")
 	public void StopScanning() {
 		mBluetoothAdapter.stopLeScan(mLeScanCallback);
 		LogMessage("StopScanning Successfully.", "i");
 	}
 
-	@SimpleFunction
+	@SimpleFunction(description="Connect to BLE device with index. Index specifies the position of DeviceList.")
 	public void Connect(int index) {
 		BluetoothGattCallback newGattCallback = null;
 		currentBluetoothGatt = mLeDevices.get(index - 1).connectGatt(activity, false, initCallBack(newGattCallback));
@@ -174,7 +174,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	@SimpleFunction
+	@SimpleFunction(description="Connect to BLE device with address. Address specifies mac address of the BLE device.")
 	public void ConnectWithAddress(String address) {
 		for (BluetoothDevice bluetoothDevice : mLeDevices) {
 			if (bluetoothDevice.toString().equals(address)) {
@@ -191,7 +191,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	@SimpleFunction
+	@SimpleFunction(description="Disconnect from connected BLE device with address. Address specifies mac address of the BLE device.")
 	public void DisconnectWithAddress(String address) {
 		if (gattList.containsKey(address)) {
 			gattList.get(address).disconnect();
@@ -203,110 +203,128 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	@SimpleFunction
+	
+	@SimpleFunction(description="Write String value to a connected BLE device. Service UUID, Characteristic UUID and String value"
+			+ "are required.")
 	public void WriteStringValue(String service_uuid, String characteristic_uuid, String value) {
 		writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), value);
 	}
 	
-	@SimpleFunction
+	
+	@SimpleFunction(description="Write Integer value to a connected BLE device. Service UUID, Characteristic UUID, Integer value"
+			+ " and offset are required. Offset specifies the start position of writing data.")
 	public void WriteIntValue(String service_uuid, String characteristic_uuid, int value, int offset) {
 		writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), value, BluetoothGattCharacteristic.FORMAT_SINT32, offset);
 	}
+	
 
-	@SimpleFunction
+	@SimpleFunction(description="Read Integer value from a connected BLE device. Service UUID, Characteristic UUID and offset"
+			+ " are required. Offset specifies the start position of reading data.")
 	public void ReadIntValue(String service_uuid, String characteristic_uuid, int intOffset) {
 		this.intOffset = intOffset;
 		readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
 	}
 	
-	@SimpleFunction
+	
+	@SimpleFunction(description="Read String value from a connected BLE device. Service UUID, Characteristic UUID and offset"
+			+ " are required. Offset specifies the start position of reading data.")
 	public void ReadStringValue(String service_uuid, String characteristic_uuid, int strOffset) {
 		this.strOffset = strOffset;
 		readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
 	}
 	
-	@SimpleFunction
+	
+	@SimpleFunction(description="Read Float value from a connected BLE device. Service UUID, Characteristic UUID and offset"
+			+ " are required. Offset specifies the start position of reading data.")
 	public void ReadFloatValue(String service_uuid, String characteristic_uuid, int floatOffset) {
 		this.floatOffset = floatOffset;
 		readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
 	}
 	
-	@SimpleFunction
+	
+	@SimpleFunction(description="Read Byte value from a connected BLE device. Service UUID and Characteristic UUID are required.")
 	public void ReadByteValue(String service_uuid, String characteristic_uuid) {
 		readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
 	}
 
-	@SimpleFunction
-	public void WriteFindMe(int setFindMe) {
-		if (setFindMe <= 2 && setFindMe >= 0) {
-			writeChar(BLEList.FINDME_SER, BLEList.FINDME_CHAR, setFindMe, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+	
+	@SimpleFunction(description="Write Alert Level to a connected BLE device with Alert Level Service. Alert Level can be 0, 1 and 2."
+			+ " 0 for no alert; 1 for mid alert; 2 for high alert.")
+	public void WriteFindMe(int findMe_value) {
+		if (findMe_value <= 2 && findMe_value >= 0) {
+			writeChar(BLEList.FINDME_SER, BLEList.FINDME_CHAR, findMe_value, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		}
 	}
 
-	@SimpleFunction
+	
+	@SimpleFunction(description="Set Link Loss value to a connected BLE device with Link Loss Service. Link Loss value can be 0, 1 and 2."
+			+ " 0 for no alert; 1 for mid alert; 2 for high alert.")
 	public void SetLinkLoss(int value) {
 		if (value <= 2 && value >= 0) {
 			linkLoss_value = value;
 			writeChar(BLEList.LINKLOSS_SER, BLEList.LINKLOSS_CHAR, value, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		}
 	}
+	
 
-	@SimpleFunction
+	@SimpleFunction(description="Read Battery level from a connected BLE device with Battery Service.")
 	public void ReadBattery() {
 		readChar(BLEList.BATTERY_LEVEL_SER, BLEList.BATTERY_LEVEL_CHAR);
 	}
 
-	@SimpleFunction
+	
+	@SimpleFunction(description="Read Temperature from a connected BLE device with Health Thermometer Service.")
 	public void ReadTemperature() {
 		readChar(BLEList.THERMOMETER_SER, BLEList.THERMOMETER_CHAR);
 	}
 
-	@SimpleFunction
+	
+	@SimpleFunction(description="Read Heart Rate from a connected BLE device with Heart Rate Service.")
 	public void ReadHeartRate() {
 		readChar(BLEList.HEART_RATE_SER, BLEList.HEART_RATE_MEASURE_CHAR);
 	}
 
-	@SimpleFunction
+	
+	@SimpleFunction(description="Read Tx power from a connected BLE device with Tx Power Service.")
 	public void ReadTxPower() {
 		readChar(BLEList.TXPOWER_SER, BLEList.TXPOWER_CHAR);
 	}
 
-	@SimpleFunction
-	public void ReadLinkLoss() {
-		readChar(BLEList.LINKLOSS_SER, BLEList.LINKLOSS_CHAR);
-	}
-
-	@SimpleFunction
+	
+	@SimpleFunction(description="Read Tx power from a connected BLE device with Tx Power Service.")
 	public int FoundDeviceRssi(int index) {
 		if (index <= mLeDevices.size())
-			return mLeDeviceRssi.get(mLeDevices.get(index));
+			return mLeDeviceRssi.get(mLeDevices.get(index-1));
 		else
 			return -1;
 	}
 
-	@SimpleFunction
+	
+	@SimpleFunction(description="Get the name of found device by index. Index specifies the position of DeviceList.")
 	public String FoundDeviceName(int index) {
 		if (index <= mLeDevices.size()) {
 			LogMessage("Device Name is found", "i");
-			return mLeDevices.get(index).getName();
+			return mLeDevices.get(index-1).getName();
 		} else {
 			LogMessage("Device Name isn't found", "e");
 			return null;
 		}
 	}
 
-	@SimpleFunction
-	public String FoundDeviceUUID(int index) {
+	
+	@SimpleFunction(description="Get the address of found device by index. Index specifies the position of DeviceList.")
+	public String FoundDeviceAddress(int index) {
 		if (index <= mLeDevices.size()) {
-			LogMessage("Device UUID is found", "i");
-			return mLeDevices.get(index).getAddress();
+			LogMessage("Device Address is found", "i");
+			return mLeDevices.get(index-1).getAddress();
 		} else {
-			LogMessage("Device UUID is found", "e");
+			LogMessage("Device Address is found", "e");
 			return "";
 		}
 	}
 
-	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	
+	@SimpleProperty(description="Return the battery level.", category = PropertyCategory.BEHAVIOR)
 	public String BatteryValue() {
 		if (isCharRead) {
 			return Integer.toString(battery);
@@ -315,7 +333,8 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	
+	@SimpleProperty(description="Return the temperature.", category = PropertyCategory.BEHAVIOR)
 	public String TemperatureValue() {
 		if (isCharRead) {
 			if ((int) bodyTemp[0] == 0) {
@@ -332,7 +351,8 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	
+	@SimpleProperty(description="Return the heart rate.", category = PropertyCategory.BEHAVIOR)
 	public String HeartRateValue() {
 		if (isCharRead) {
 			int mTemp = 0;
@@ -349,12 +369,14 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	
+	@SimpleProperty(description="Return the Tx power.", category = PropertyCategory.BEHAVIOR)
 	public int TxPower() {
 		return txPower;
 	}
 
-	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	
+	@SimpleProperty(description="Return the link loss value.", category = PropertyCategory.BEHAVIOR)
 	public String LinkLossValue() {
 		if (linkLoss_value == 0) {
 			return "No Alert";
@@ -365,7 +387,8 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	
+	@SimpleProperty(description="Return true if BLE device is connected; Otherwise, return false.", category = PropertyCategory.BEHAVIOR)
 	public boolean IsDeviceConnected() {
 		if (isConnected) {
 			return true;
@@ -373,18 +396,19 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 			return false;
 		}
 	}
+	
 
-	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	@SimpleProperty(description="Return a sorted BLE device list. The return type is String.", category = PropertyCategory.BEHAVIOR)
 	public String DeviceList() {
 		deviceInfoList = "";
 		mLeDevices = sortDeviceList(mLeDevices);
 		if (!mLeDevices.isEmpty()) {
 			for (int i = 0; i < mLeDevices.size(); i++) {
 				if (i != (mLeDevices.size() - 1)) {
-					deviceInfoList += mLeDevices.get(i).toString() + " " + mLeDevices.get(i).getName() + " "
+					deviceInfoList += mLeDevices.get(i).getAddress() + " " + mLeDevices.get(i).getName() + " "
 							+ Integer.toString(mLeDeviceRssi.get(mLeDevices.get(i))) + ",";
 				} else {
-					deviceInfoList += mLeDevices.get(i).toString() + " " + mLeDevices.get(i).getName() + " "
+					deviceInfoList += mLeDevices.get(i).getAddress() + " " + mLeDevices.get(i).getName() + " "
 							+ Integer.toString(mLeDeviceRssi.get(mLeDevices.get(i)));
 				}
 			}
@@ -392,27 +416,32 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		return deviceInfoList;
 	}
 
-	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	
+	@SimpleProperty(description="Return the Rssi of connected device.", category = PropertyCategory.BEHAVIOR)
 	public String ConnectedDeviceRssi() {
 		return Integer.toString(device_rssi);
 	}
 
-	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	
+	@SimpleProperty(description="Return Integer value of read value.", category = PropertyCategory.BEHAVIOR)
 	public int IntGattValue() {
 		return intValue;
 	}
 
-	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	
+	@SimpleProperty(description="Return String value of read value.", category = PropertyCategory.BEHAVIOR)
 	public String StringGattValue() {
 		return stringValue;
 	}
 
-	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	
+	@SimpleProperty(description="Return Byte value of read value.", category = PropertyCategory.BEHAVIOR)
 	public String ByteGattValue() {
 		return byteValue;
 	}
+	
 
-	@SimpleEvent(description = "")
+	@SimpleEvent(description = "The event will be triggered when BLE device is connected.")
 	public void Connected() {
 		uiThread.post(new Runnable() {
 			@Override
@@ -422,7 +451,8 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		});
 	}
 
-	@SimpleEvent(description = "")
+	
+	@SimpleEvent(description = "The event will be triggered when Rssi of found BLE device is changed.")
 	public void RssiChanged() {
 		uiThread.postDelayed(new Runnable() {
 			@Override
@@ -433,12 +463,15 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}, 1000);
 	}
 
-	@SimpleEvent(description = "")
+	
+	@SimpleEvent(description = "The event will be triggered when a new BLE device is found.")
 	public void DeviceFound() {
 		EventDispatcher.dispatchEvent(this, "DeviceFound");
 	}
 
-	@SimpleEvent(description = "")
+	
+	@SimpleEvent(description = "The event will be triggered when value from connected BLE device is read. The value"
+			+ " can be byte, Integer, float and String.")
 	public void ValueRead(final String byteValue, final int intValue, final float floatValue, final String stringValue) {
 		uiThread.post(new Runnable() {
 			@Override
@@ -448,7 +481,9 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		});
 	}
 
-	@SimpleEvent(description = "")
+	
+	@SimpleEvent(description = "The event will be triggered when value from connected BLE device is changed. The value"
+			+ " can be byte, Integer, float and String.")
 	public void ValueChanged(final String byteValue, final int intValue, final float floatValue, final String stringValue) {
 		uiThread.post(new Runnable() {
 			@Override
@@ -458,7 +493,8 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		});
 	}
 	
-	@SimpleEvent(description = "")
+	
+	@SimpleEvent(description = "The event will be triggered when value is successful write to connected BLE device.")
 	public void ValueWrite() {
 		uiThread.post(new Runnable() {
 			@Override
@@ -468,6 +504,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		});
 	}
 
+	
 	/**
 	 * Functions
 	 */
@@ -484,6 +521,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		return deviceList;
 	}
 
+	
 	// add device when scanning
 	private void addDevice(BluetoothDevice device, int rssi, byte[] scanRecord) {
 		if (!mLeDevices.contains(device)) {
@@ -496,6 +534,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		RssiChanged();
 	}
 
+	
 	// read characteristic based on UUID
 	private void readChar(UUID ser_uuid, UUID char_uuid) {
 		if (isServiceRead && !mGattService.isEmpty()) {
@@ -533,6 +572,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
+	
 	// Write characteristic based on uuid
 	private void writeChar(UUID ser_uuid, UUID char_uuid, int value, int format, int offset) {
 		if (isServiceRead && !mGattService.isEmpty()) {
@@ -639,7 +679,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 					ValueRead("", linkLoss_value, 0, "");
 				} else {
 					data = characteristic.getValue();
-					intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32, intOffset);
+					intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, intOffset);
 					stringValue = characteristic.getStringValue(strOffset);
 					floatValue = characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_FLOAT, floatOffset);
 					byteValue = "";
@@ -659,7 +699,6 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 				battery = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 				isCharRead = true;
 				ValueChanged("",battery, 0, "");
-				// ValueChanged(battery);
 			} else if (characteristic.getUuid().equals(BLEList.THERMOMETER_CHAR)) {
 				bodyTemp = characteristic.getValue();
 				isCharRead = true;
@@ -670,7 +709,6 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 				}
 				float mTemp = ((bodyTemp[2] & 0xff) << 8) + (bodyTemp[1] & 0xff);
 				ValueChanged("", 0, 0, mTemp + tempUnit);
-				// ValueChanged(bodyTemp);
 			} else if (characteristic.getUuid().equals(BLEList.HEART_RATE_MEASURE_CHAR)) {
 				heartRate = characteristic.getValue();
 				isCharRead = true;
@@ -685,15 +723,13 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 				txPower = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 				isCharRead = true;
 				ValueChanged("", txPower, 0, "");
-				// ValueChanged(txPower);
 			} else if (characteristic.getUuid().equals(BLEList.LINKLOSS_CHAR)) {
 				linkLoss_value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 				isCharRead = true;
 				ValueChanged("", linkLoss_value, 0, "");
-				// ValueChanged(linkLoss_value);
 			} else {
 				data = characteristic.getValue();
-				intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32, intOffset);
+				intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, intOffset);
 				stringValue = characteristic.getStringValue(strOffset);
 				floatValue = characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_FLOAT, floatOffset);
 				byteValue = "";

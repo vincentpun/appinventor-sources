@@ -5641,10 +5641,6 @@ public interface OdeMessages extends Messages {
     @Description("")
     String ReadTxPowerMethods();
     
-    @DefaultMessage("ReadLinkLoss")
-    @Description("")
-    String ReadLinkLossMethods();
-    
     @DefaultMessage("FoundDeviceRssi")
     @Description("")
     String FoundDeviceRssiMethods();
@@ -5653,9 +5649,9 @@ public interface OdeMessages extends Messages {
     @Description("")
     String FoundDeviceNameMethods();
     
-    @DefaultMessage("FoundDeviceUUID")
+    @DefaultMessage("FoundDeviceAddress")
     @Description("")
-    String FoundDeviceUUIDMethods();
+    String FoundDeviceAddressMethods();
     
     @DefaultMessage("BatteryValue")
     @Description("")
