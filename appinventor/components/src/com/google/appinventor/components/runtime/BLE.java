@@ -92,11 +92,12 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 	private byte[] descriptorValue;
 	private int intValue = 0;
 	private float floatValue = 0;
-	private String stringValue;
-	private String byteValue;
+	private String stringValue="";
+	private String byteValue="";
 	private int intOffset = 0;
 	private int strOffset = 0;
 	private int floatOffset = 0;
+	
 
 	public BLE(ComponentContainer container) {
 		super(container.$form());
@@ -695,6 +696,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		@Override
 		// Result of a characteristic read operation is changed
 		public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+			
 			if (characteristic.getUuid().equals(BLEList.BATTERY_LEVEL_CHAR)) {
 				battery = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 				isCharRead = true;
@@ -729,9 +731,11 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 				ValueChanged("", linkLoss_value, 0, "");
 			} else {
 				data = characteristic.getValue();
-				intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, intOffset);
+				//xx no 32
+				intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, intOffset);
 				stringValue = characteristic.getStringValue(strOffset);
-				floatValue = characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_FLOAT, floatOffset);
+				//xx no float
+				//floatValue = characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_FLOAT, floatOffset);
 				byteValue = "";
 				for (byte i : data) {
 					byteValue += i;
