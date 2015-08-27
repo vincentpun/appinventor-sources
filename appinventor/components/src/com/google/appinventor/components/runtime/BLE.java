@@ -175,7 +175,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	@SimpleFunction(description="Connect to BLE device with address. Address specifies mac address of the BLE device.")
+	@SimpleFunction(description="Connect to BLE device with address. Address specifies bluetooth address of the BLE device.")
 	public void ConnectWithAddress(String address) {
 		for (BluetoothDevice bluetoothDevice : mLeDevices) {
 			if (bluetoothDevice.toString().equals(address)) {
@@ -192,7 +192,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
-	@SimpleFunction(description="Disconnect from connected BLE device with address. Address specifies mac address of the BLE device.")
+	@SimpleFunction(description="Disconnect from connected BLE device with address. Address specifies bluetooth address of the BLE device.")
 	public void DisconnectWithAddress(String address) {
 		if (gattList.containsKey(address)) {
 			gattList.get(address).disconnect();
@@ -292,7 +292,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
 	}
 
 	
-	@SimpleFunction(description="Read Tx power from a connected BLE device with Tx Power Service.")
+	@SimpleFunction(description="Get the Rssi of found device by index. Index specifies the position of DeviceList.")
 	public int FoundDeviceRssi(int index) {
 		if (index <= mLeDevices.size())
 			return mLeDeviceRssi.get(mLeDevices.get(index-1));
