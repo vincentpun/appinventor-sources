@@ -5720,5 +5720,37 @@ public interface OdeMessages extends Messages {
     @DefaultMessage("ValueChanged")
     @Description("")
     String ValueChangedEvents();
+
+    @DefaultMessage("iBeacon")
+    @Description("")
+    String iBeaconComponentPallette();
+
+    @DefaultMessage("BeaconsFound")
+    @Description("")
+    String BeaconsFoundEvents();
+
+    @DefaultMessage("Major")
+    @Description("")
+    String MajorMethods();
+
+    @DefaultMessage("Minor")
+    @Description("")
+    String MinorMethods();
+
+    @DefaultMessage("UUID")
+    @Description("")
+    String UUIDMethods();
+
+    @DefaultMessage("RSSI")
+    @Description("")
+    String RSSIMethods();
+
+    @DefaultMessage("StartScanningForBeacons")
+    @Description("")
+    String StartScanningForBeaconsMethods();
+
+    @DefaultMessage("StopScanningForBeacons")
+    @Description("")
+    String StopScanningForBeaconsMethods();
     
 }

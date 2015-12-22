@@ -511,6 +511,8 @@ public class YaVersion {
     
   public static final int BLE_COMPONENT_VERSION = 1;
 
+  public static final int IBEACON_COMPONENT_VERSION = 1;
+
   // For BUTTON_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
   // For BUTTON_COMPONENT_VERSION 3:
