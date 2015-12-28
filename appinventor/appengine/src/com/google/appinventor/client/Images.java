@@ -406,6 +406,12 @@ public interface Images extends Resources {
   ImageResource fusiontables();
 
   /**
+   * Designer palette item: iBeacon component
+   */
+  @Source("com/google/appinventor/images/iBeacon.png")
+  ImageResource iBeaconComponent();
+
+  /**
    * Designer palette item: WebViewer component
    */
   @Source("com/google/appinventor/images/webviewer.png")
