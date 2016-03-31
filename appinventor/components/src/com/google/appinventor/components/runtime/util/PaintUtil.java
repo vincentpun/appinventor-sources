@@ -19,15 +19,15 @@ public class PaintUtil {
 
   /**
    * Changes the paint color to the specified value.
-   *
-   * @param paint the object to mutate with the new color
-   * @param argb a 32-bit integer with eight bits for alpha, red, green, and blue,
-   *        respectively
-   */
-  public static void changePaint(Paint paint, int argb) {
-    // TODO(user): can the following two lines can be replaced by:
-    // paint.setColor(argb)?
-    paint.setColor(argb & 0x00FFFFFF);
+            *
+    * @param paint the object to mutate with the new color
+            * @param argb a 32-bit integer with eight bits for alpha, red, green, and blue,
+    *        respectively
+            */
+    public static void changePaint(Paint paint, int argb) {
+      // TODO(user): can the following two lines can be replaced by:
+      // paint.setColor(argb)?
+      paint.setColor(argb & 0x00FFFFFF);
     paint.setAlpha((argb >> 24) & 0xFF);
     paint.setXfermode(null);
   }

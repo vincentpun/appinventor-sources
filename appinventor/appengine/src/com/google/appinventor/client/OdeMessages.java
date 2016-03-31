@@ -5752,5 +5752,33 @@ public interface OdeMessages extends Messages {
     @DefaultMessage("StopScanningForBeacons")
     @Description("")
     String StopScanningForBeaconsMethods();
-    
+
+    @DefaultMessage("EddystoneURLFound")
+    @Description("")
+    String EddystoneURLFoundEvents();
+
+    @DefaultMessage("EddystoneUIDFound")
+    @Description("")
+    String EddystoneUIDFoundEvents();
+
+    @DefaultMessage("StartScanningForEddystoneURL")
+    @Description("")
+    String StartScanningForEddystoneURLMethods();
+
+    @DefaultMessage("StartScanningForEddystoneUID")
+    @Description("")
+    String StartScanningForEddystoneUIDMethods();
+
+    @DefaultMessage("StopScanningForAllEddystones")
+    @Description("")
+    String StopScanningForAllEddystonesMethods();
+
+    @DefaultMessage("StopScanningForEddystoneURL")
+    @Description("")
+    String StopScanningForEddystoneURLMethods();
+
+    @DefaultMessage("StopScanningForEddystoneUID")
+    @Description("")
+    String StopScanningForEddystoneUIDMethods();
+
 }
