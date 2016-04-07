@@ -378,7 +378,6 @@ public class Eddystone extends AndroidNonvisibleComponent implements Component {
             targetEddystones.add(new Object[] {eddystone, 0});
         } else {
             ((EddystoneBeacon) targetEddystones.get(index)[0]).setRssi(rssi);
-            ((EddystoneBeacon) targetEddystones.get(index)[0]).setTelemetry(eddystone.getTelemetry());
             targetEddystones.get(index)[1] = 0;
         }
     }
@@ -482,6 +481,10 @@ public class Eddystone extends AndroidNonvisibleComponent implements Component {
 
         int temperatureFixed = tlmData[offset++];
         int temperatureFraction = tlmData[offset++];
+
+        if (temperatureFixed > 127)
+            temperatureFixed = temperatureFixed - 256;
+
         double temperature = (temperatureFixed * 0x100 + temperatureFraction) / 256.0;  // 8.8 fixed-point notation
 
         byte[] advertisingPDUCountBytes = Arrays.copyOfRange(tlmData, offset, offset + 4);
