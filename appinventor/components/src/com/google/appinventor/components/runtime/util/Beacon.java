@@ -9,13 +9,13 @@ public final class Beacon {
         Immediate,
         Near,
         Far
-    };
+    }
 
-    public UUID uuid;
-    public int major;
-    public int minor;
-    public int txPower;
-    public int rssi;
+    UUID uuid;
+    int major;
+    int minor;
+    int txPower;
+    int rssi;
 
     public Beacon(UUID uuid, int major, int minor, int txPower, int rssi) {
         this.uuid = uuid;
@@ -23,6 +23,47 @@ public final class Beacon {
         this.minor = minor;
         this.txPower = txPower;
         this.rssi = rssi;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public int getMajor() {
+        return major;
+    }
+
+    public int getMinor() {
+        return minor;
+    }
+
+    public int getTxPower() {
+        return txPower;
+    }
+
+    public int getRssi() {
+        return rssi;
+    }
+
+    public void setRssi(int rssi) {
+        this.rssi = rssi;
+    }
+
+    public String getDistanceString() {
+        Distance distance = getDistance();
+
+        switch (distance) {
+            case Unknown:
+                return "Unknown";
+            case Immediate:
+                return "Immediate";
+            case Near:
+                return "Near";
+            case Far:
+                return "Far";
+        }
+
+        return null;
     }
 
     // Uses AltBeacon's algorithm

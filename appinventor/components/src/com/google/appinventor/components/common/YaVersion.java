@@ -511,7 +511,7 @@ public class YaVersion {
     
   public static final int BLE_COMPONENT_VERSION = 1;
 
-  public static final int IBEACON_COMPONENT_VERSION = 1;
+  public static final int IBEACON_COMPONENT_VERSION = 2;
 
   public static final int EDDYSTONE_COMPONENT_VERSION = 1;
 

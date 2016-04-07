@@ -5729,21 +5729,13 @@ public interface OdeMessages extends Messages {
     @Description("")
     String BeaconsFoundEvents();
 
-    @DefaultMessage("Major")
+    @DefaultMessage("EnteredRegion")
     @Description("")
-    String MajorMethods();
+    String EnteredRegionEvents();
 
-    @DefaultMessage("Minor")
+    @DefaultMessage("ExitedRegion")
     @Description("")
-    String MinorMethods();
-
-    @DefaultMessage("UUID")
-    @Description("")
-    String UUIDMethods();
-
-    @DefaultMessage("RSSI")
-    @Description("")
-    String RSSIMethods();
+    String ExitedRegionEvents();
 
     @DefaultMessage("StartScanningForBeacons")
     @Description("")

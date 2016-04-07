@@ -11,10 +11,7 @@ import android.util.Log;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.Beacon;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.SdkLevel;
-import com.google.appinventor.components.runtime.util.YailList;
+import com.google.appinventor.components.runtime.util.*;
 import gnu.math.IntNum;
 
 import java.util.*;
@@ -64,7 +61,7 @@ public class IBeacon extends AndroidNonvisibleComponent implements Component {
         @Override
         public void run() {
             if (beacons.size() > 0)
-                BeaconsFound(beacons.size());
+                BeaconsFound(getFlattenedBeacons());
 
             scanHandler.postDelayed(loopLeScan, 10);
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
@@ -78,10 +75,10 @@ public class IBeacon extends AndroidNonvisibleComponent implements Component {
                 beacon[1] = (Integer)(beacon[1]) + 1;
 
                 if ((Integer)beacon[1] >= 4) {
-                    ((Beacon)beacon[0]).rssi = -1;
+                    ((Beacon)beacon[0]).setRssi(-1);
 
                     // Dispatch another event to let app update status
-                    BeaconsFound(beacons.size());
+                    BeaconsFound(getFlattenedBeacons());
                 }
             }
 
@@ -95,7 +92,9 @@ public class IBeacon extends AndroidNonvisibleComponent implements Component {
                     if (beacons.size() == 0) {
                         // Dispatch another event to let app update status
                         uiThread.removeCallbacksAndMessages(null);
-                        BeaconsFound(beacons.size());
+                        ExitedRegion();
+                    } else {
+                        BeaconsFound(getFlattenedBeacons());
                     }
                 }
             }
@@ -117,23 +116,30 @@ public class IBeacon extends AndroidNonvisibleComponent implements Component {
                 return;
 
             // Filter UUID that are not in the "region"
-            if (uuid != null && !beacon.uuid.equals(uuid))
+            if (uuid != null && !beacon.getUuid().equals(uuid))
                 return;
 
             // Filter out non-matching major numbers
-            if (uuid != null && major >= 0 && beacon.major != major)
+            if (uuid != null && major >= 0 && beacon.getMajor() != major)
                 return;
 
             // Filter out non-matching minor numbers
-            if (uuid != null && major >= 0 && minor >= 0 && beacon.minor != minor)
+            if (uuid != null && major >= 0 && minor >= 0 && beacon.getMinor() != minor)
                 return;
 
             int index = indexOfBeacon(beacon);
 
             if (index < 0) {
+                boolean shouldNotifyEnterRegion = false;
+                if (beacons.size() == 0)
+                    shouldNotifyEnterRegion = true;
+
                 beacons.add(new Object[]{beacon, 0});
+
+                if (shouldNotifyEnterRegion)
+                    EnteredRegion();
             } else {
-                ((Beacon)beacons.get(index)[0]).rssi = rssi;
+                ((Beacon)beacons.get(index)[0]).setRssi(rssi);
                 beacons.get(index)[1] = 0;
             }
 
@@ -141,46 +147,34 @@ public class IBeacon extends AndroidNonvisibleComponent implements Component {
         }
     };
 
-    @SimpleEvent(description = "This will be called whenever for each scanning")
-    public void BeaconsFound(final int numberOfBeacons) {
+    @SimpleEvent(description = "This will be called whenever beacons are ranged for each scanning")
+    public void BeaconsFound(final YailList beacons) {
         uiThread.post(new Runnable() {
             @Override
             public void run() {
-                EventDispatcher.dispatchEvent(IBeacon.this, "BeaconsFound", numberOfBeacons);
+                EventDispatcher.dispatchEvent(IBeacon.this, "BeaconsFound", beacons);
             }
         });
     }
 
-    @SimpleFunction(description = "Get the beacon major number for the nth beacon.")
-    public int Major(int beacon) {
-        if (beacon > beacons.size())
-            showError("Out of bounds");
-
-        return ((Beacon)beacons.get(beacon - 1)[0]).major;
+    @SimpleEvent(description = "This will be called whenever the first matching beacon is found")
+    public void EnteredRegion() {
+        uiThread.post(new Runnable() {
+            @Override
+            public void run() {
+                EventDispatcher.dispatchEvent(IBeacon.this, "EnteredRegion");
+            }
+        });
     }
 
-    @SimpleFunction(description = "Get the beacon minor number for the nth beacon.")
-    public int Minor(int beacon) {
-        if (beacon > beacons.size())
-            showError("Out of bounds");
-
-        return ((Beacon)beacons.get(beacon - 1)[0]).minor;
-    }
-
-    @SimpleFunction(description = "Get the beacon UUID for the nth beacon.")
-    public String UUID(int beacon) {
-        if (beacon > beacons.size())
-            showError("Out of bounds");
-
-        return ((Beacon)beacons.get(beacon - 1)[0]).uuid.toString();
-    }
-
-    @SimpleFunction(description = "Get the beacon RSSI for the nth beacon.")
-    public int RSSI(int beacon) {
-        if (beacon > beacons.size())
-            showError("Out of bounds");
-
-        return ((Beacon)beacons.get(beacon - 1)[0]).rssi;
+    @SimpleEvent(description = "This will be called whenever the first matching beacon is found")
+    public void ExitedRegion() {
+        uiThread.post(new Runnable() {
+            @Override
+            public void run() {
+                EventDispatcher.dispatchEvent(IBeacon.this, "ExitedRegion");
+            }
+        });
     }
 
     public IBeacon(ComponentContainer container) {
@@ -192,7 +186,6 @@ public class IBeacon extends AndroidNonvisibleComponent implements Component {
         if (SdkLevel.getLevel() < SdkLevel.LEVEL_JELLYBEAN_MR2) {
             mBluetoothAdapter = null;
         } else {
-            mBluetoothAdapter = newBluetoothAdapter(activity);
             mBluetoothAdapter = newBluetoothAdapter(activity);
         }
 
@@ -323,7 +316,7 @@ public class IBeacon extends AndroidNonvisibleComponent implements Component {
         int minor = (data[offset + 2] & 0xFF) * 0x100 + (data[offset + 3] & 0xFF);
 
         offset += 4;
-        int txPower = (data[offset] & 0xFF) - 256;
+        int txPower = BeaconUtil.getTxPower(data[offset]);
 
         return new Beacon(UUID.fromString(uuid), major, minor, txPower, rssi);
     }
@@ -360,4 +353,26 @@ public class IBeacon extends AndroidNonvisibleComponent implements Component {
         });
     }
 
+    private YailList getFlattenedBeacons() {
+        ArrayList<YailList> flattenedBeacons = new ArrayList<YailList>();
+
+        for(Object[] beaconRecord: beacons) {
+            Beacon beacon = (Beacon)beaconRecord[0];
+
+            Object[] pairs = new Object[7];
+
+            pairs[0] = YailList.makeList(new Object[] {"UUID", beacon.getUuid().toString()});
+            pairs[1] = YailList.makeList(new Object[] {"Major", String.valueOf(beacon.getMajor())});
+            pairs[2] = YailList.makeList(new Object[] {"Minor", String.valueOf(beacon.getMinor())});
+            pairs[3] = YailList.makeList(new Object[] {"Tx Power", String.valueOf(beacon.getTxPower())});
+            pairs[4] = YailList.makeList(new Object[] {"RSSI", String.valueOf(beacon.getRssi())});
+            pairs[5] = YailList.makeList(new Object[] {"Accuracy", String.valueOf(beacon.getAccuracy())});
+            pairs[6] = YailList.makeList(new Object[] {"Distance", beacon.getDistanceString()});
+
+            YailList theBeacon = YailList.makeList(pairs);
+            flattenedBeacons.add(theBeacon);
+        }
+
+        return YailList.makeList(flattenedBeacons.toArray(new YailList[flattenedBeacons.size()]));
+    }
 }
