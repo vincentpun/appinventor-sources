@@ -93,9 +93,9 @@ public class IBeacon extends AndroidNonvisibleComponent implements Component {
                         // Dispatch another event to let app update status
                         uiThread.removeCallbacksAndMessages(null);
                         ExitedRegion();
-                    } else {
-                        BeaconsFound(getFlattenedBeacons());
                     }
+
+                    BeaconsFound(getFlattenedBeacons());
                 }
             }
 
